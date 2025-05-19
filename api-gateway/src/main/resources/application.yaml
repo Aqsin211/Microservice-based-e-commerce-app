@@ -1,0 +1,88 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ms-product
+          uri: http://localhost:8080
+          predicates:
+            - Path=/products/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: productServiceCircuitBreaker
+                fallBackUri: forward:/fallback/productServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 2
+            - RewritePath=/products/?(?<segment>.*), /${segment}
+
+        - id: ms-payment
+          uri: http://localhost:8082
+          predicates:
+            - Path=/payments/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: paymentServiceCircuitBreaker
+                fallBackUri: forward:/fallback/paymentServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 2
+            - RewritePath=/payments/?(?<segment>.*), /${segment}
+
+        - id: ms-order
+          uri: http://localhost:8081
+          predicates:
+            - Path=/orders/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: orderServiceCircuitBreaker
+                fallBackUri: forward:/fallback/orderServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 2
+            - RewritePath=/orders/?(?<segment>.*), /${segment}
+  security:
+    oauth2:
+      client:
+        registration:
+          okta:
+            client-id: 0oaoqef7npESUjEAM5d7
+            client-secret: wI_Zf_gPSnoiseSBQqjz-IK0W2Ct7Tx0SeoE82X5U-AD2L41HJRgAHKBFl5jfC0i
+            scope: openid, profile, email
+            provider: okta
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          okta:
+            issuer-uri: https://dev-16108404.okta.com/oauth2/default
+
+server:
+  port: 9090
+springdoc:
+  swagger-ui:
+    urls:
+      - name: ms-product
+        url: http://localhost:8080/v3/api-docs
+      - name: ms-payment
+        url: http://localhost:8082/v3/api-docs
+      - name: ms-order
+        url: http://localhost:8081/v3/api-docs
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"
