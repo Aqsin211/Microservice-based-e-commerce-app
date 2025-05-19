@@ -18,7 +18,7 @@ public class AuthController {
     public AuthResponse login(
             Model model,
             @AuthenticationPrincipal OidcUser oidcUser,
-            @RegisteredOAuth2AuthorizedClient("okta") OAuth2AuthorizedClient client
+            @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient client
     ) {
         return AuthMapper.AUTH_MAPPER.buildAuthResponse(oidcUser, client);
     }

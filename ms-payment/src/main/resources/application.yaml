@@ -1,6 +1,11 @@
 spring:
   application:
     name: ms-payment
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
   datasource:
     url: jdbc:postgresql://localhost:5432/payment_db
     username: postgres

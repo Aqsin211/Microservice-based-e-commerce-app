@@ -12,13 +12,16 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http
-                .authorizeExchange(exchanges ->
-                        exchanges
-                                .pathMatchers("/v1/auth/login").permitAll()
-                                .anyExchange().authenticated()
+        http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/v1/auth/login").permitAll() // Allow login endpoint without token
+                        .anyExchange().authenticated()             // Everything else requires valid Google Bearer token
                 )
-                .oauth2Login(Customizer.withDefaults()) // Only this is needed
-                .build();
+                .oauth2Login(Customizer.withDefaults())        // For browser-based login, optional
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults())            // This will validate Google's JWT access tokens
+                );
+        return http.build();
     }
 }

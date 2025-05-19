@@ -6,6 +6,11 @@ spring:
     username: postgres
     password: Postgres1234567890
     driver-class-name: org.postgresql.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
   jpa:
     hibernate:
       ddl-auto: validate

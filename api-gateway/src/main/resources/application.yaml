@@ -57,16 +57,21 @@ spring:
     oauth2:
       client:
         registration:
-          okta:
-            client-id: 0oaoqef7npESUjEAM5d7
-            client-secret: wI_Zf_gPSnoiseSBQqjz-IK0W2Ct7Tx0SeoE82X5U-AD2L41HJRgAHKBFl5jfC0i
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid, profile, email
-            provider: okta
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
         provider:
-          okta:
-            issuer-uri: https://dev-16108404.okta.com/oauth2/default
-
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+            user-name-attribute: sub
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
 server:
   port: 9090
 springdoc:

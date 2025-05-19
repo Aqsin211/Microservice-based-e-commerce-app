@@ -1,6 +1,7 @@
 package az.company.orders.client;
 
 import az.company.orders.client.decoder.CustomErrorDecoder;
+import az.company.orders.config.FeignAuthInterceptor;
 import az.company.orders.model.client.response.PaymentResponse;
 import az.company.orders.model.client.request.CreatePaymentRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(
         name = "ms-payment",
         url = "http://localhost:8082/v1/payments",
-        configuration = CustomErrorDecoder.class
+        configuration = {FeignAuthInterceptor.class, CustomErrorDecoder.class}
 )
 public interface PaymentClient {
     @PostMapping

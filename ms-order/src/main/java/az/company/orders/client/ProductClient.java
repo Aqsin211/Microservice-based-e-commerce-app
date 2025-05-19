@@ -1,6 +1,7 @@
 package az.company.orders.client;
 
 import az.company.orders.client.decoder.CustomErrorDecoder;
+import az.company.orders.config.FeignAuthInterceptor;
 import az.company.orders.model.client.request.ReduceQuantityRequest;
 import az.company.orders.model.client.response.ProductResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(
         name = "ms-product",
         url = "http://localhost:8080/v1/products",
-        configuration = CustomErrorDecoder.class
+        configuration = {FeignAuthInterceptor.class, CustomErrorDecoder.class}
 )
 public interface ProductClient {
     @PostMapping("/reduce-quantity")
